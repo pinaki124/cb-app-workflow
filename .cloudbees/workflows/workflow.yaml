@@ -29,3 +29,12 @@ jobs:
         shell: sh
         run: |
           echo "hello world - duplicate - deploy - 1"
+
+  mask:
+    steps:
+      - name: Say hello
+        uses: docker://golang:1.20.3-alpine3.17
+        shell: sh
+        run: |
+          echo -n "hello" | cloudbees mask
+          echo "hello world"
