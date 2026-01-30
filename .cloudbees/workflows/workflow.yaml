@@ -23,7 +23,7 @@ jobs:
         shell: sh
         run: |
           echo "hello world - duplicate - test preprod-5"
-          echo "testing concurrency with postgres"
+          echo "testing concurrency with postgres - test 2"
   deploy:
     steps:
       - name: Say hello
