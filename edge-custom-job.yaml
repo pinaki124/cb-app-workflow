@@ -21,14 +21,6 @@ handlers:
     command: sh
     args: |
       -c "echo 'Hello World!!'"
-    env:
-      SCRIPT: ${{inputs.script}}
-      LABELS: ${{inputs.labels}}
-      API_URL: ${{ cloudbees.api.url }}
-      API_TOKEN: ${{ cloudbees.api.token }}
-      CALLBACK_URL: ${{ callback.url }}
-      CALLBACK_TOKEN: ${{ callback.token }}
-      DISABLE_TLS_VERIFICATION: ${{ inputs.disableTlsVerification }}
   callback:
     uses: docker://python:3-alpine
     command: python
