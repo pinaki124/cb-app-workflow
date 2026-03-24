@@ -28,7 +28,7 @@ jobs:
         echo "Hello world! I'm $(whoami) on $(hostname)"
 
         echo "\033[0;31m Inputs context \033[0m"
-        echo "{{ toJSON(inputs) }}"
+        echo "${{ toJSON(inputs) }}"
 
         echo "\033[0;31m Vars context \033[0m"
         echo "${{ vars.vars_1 }}"
