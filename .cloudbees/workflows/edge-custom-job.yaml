@@ -1,0 +1,91 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: CustomJob
+name: edge job
+description: Submit a job for execution by an edge runner
+
+inputs:
+  script:
+    description: Script to execute.
+    required: true
+  labels:
+    description: Comma-separated list of labels to select the desired edge runner
+    required: true
+    default: "self-hosted"
+  disableTlsVerification:
+    description: Disable TLS verification when communicating with the CloudBees API
+    required: false
+    default: "FALSE"
+handlers:
+  init:
+    uses: docker://python:3-alpine
+    command: python
+    args: |
+      -c "import base64, os, json, sys, urllib.request, re, ssl
+      callback_url = os.environ['CALLBACK_URL']
+      api_token = os.environ['API_TOKEN']
+      try:
+          api_token_parts = api_token.split('.')
+          if len(api_token_parts) == 3:
+              api_payload = api_token_parts[1]
+              api_padding = len(api_payload) % 4
+              if api_padding: api_payload += '=' * (4 - api_padding)
+              api_claims = json.loads(base64.urlsafe_b64decode(api_payload))
+              automation = api_claims.get('https://www.cloudbees.com/automation', {})
+              identity = automation.get('identity', {})
+              cloudbees_org_ids = identity.get('cloudbees_org_ids', '')
+              org_id = cloudbees_org_ids.strip().split(',')[0].strip().strip(\"'\")
+              if not org_id: sys.exit('Could not extract org ID from cloudbees_org_ids claim')
+              print(f'Creating edge job for organization ID: {org_id}')
+          else:
+              sys.exit('API token is not a valid JWT')
+      except Exception as e:
+          sys.exit(f'Error extracting org ID from API token: {e}')
+      labels = [l.strip() for l in os.environ.get('LABELS', '').split(',') if l.strip()]
+      script = os.environ['SCRIPT']
+      wrapper_script = f'''
+      import subprocess, json, os, urllib.request, ssl
+      script = {repr(script)}
+      result = subprocess.run(['sh', '-c', script], capture_output=True, text=True)
+      output = result.stdout + result.stderr
+      print('=== Begin script output ===')
+      print(output)
+      print('=== End script output ===')
+      status = result.returncode
+      inner_json = json.dumps({{'status': status, 'logs': output}})
+      payload = json.dumps({{'payload': inner_json}})
+      ctx = None
+      if os.environ.get('DISABLE_TLS_VERIFICATION', '').upper() == 'TRUE': ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+      req = urllib.request.Request(os.environ['CALLBACK_URL'], data=payload.encode('utf-8'), headers={{'Content-Type': 'application/json', 'Authorization': 'Bearer ' + os.environ['CALLBACK_TOKEN']}})
+      urllib.request.urlopen(req, context=ctx)
+      '''
+      definition = {'steps': [{'command': {'command': ['python3', '-c', wrapper_script]}, 'env': {'env': {'CALLBACK_URL': callback_url, 'CALLBACK_TOKEN': os.environ['CALLBACK_TOKEN'], 'DISABLE_TLS_VERIFICATION': os.environ['DISABLE_TLS_VERIFICATION']}}}]}
+      request_body = {'organization_id': org_id, 'labels': labels, 'definition': definition}
+      ctx = None
+      if os.environ.get('DISABLE_TLS_VERIFICATION', '').upper() == 'TRUE': ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+      request_url = f\"{os.environ['API_URL']}/v1/organizations/{org_id}/edge/jobs\"
+      req = urllib.request.Request(request_url, data=json.dumps(request_body).encode('utf-8'), headers={'Content-Type': 'application/json', 'Authorization': f\"Bearer {os.environ['API_TOKEN']}\"})
+      resp = urllib.request.urlopen(req, context=ctx)
+      result = json.loads(resp.read().decode('utf-8'))
+      job_id = result['job_id']
+      print(f'Created edge job {job_id}')"
+    env:
+      SCRIPT: ${{inputs.script}}
+      LABELS: ${{inputs.labels}}
+      API_URL: ${{ cloudbees.api.url }}
+      API_TOKEN: ${{ cloudbees.api.token }}
+      CALLBACK_URL: ${{ callback.url }}
+      CALLBACK_TOKEN: ${{ callback.token }}
+      DISABLE_TLS_VERIFICATION: ${{ inputs.disableTlsVerification }}
+  callback:
+    uses: docker://python:3-alpine
+    command: python
+    args: |
+      -c "import os, json, sys;
+      payload = json.loads(os.environ['PAYLOAD']);
+      status = payload.get('status', 1);
+      logs = payload.get('logs', '');
+      print(f'Edge job completed with status: {status}');
+      print(logs);
+      sys.exit(status)"
+    env:
+      PAYLOAD: ${{ handler.payload }}
