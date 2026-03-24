@@ -28,6 +28,8 @@ jobs:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
 
+        echo "Env var: ${{ env.MY_VAR }}"
+        
         echo "\033[0;31m Inputs context \033[0m"
         echo "${{ toJSON(inputs) }}"
 
