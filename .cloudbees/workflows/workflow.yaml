@@ -22,7 +22,7 @@ jobs:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
       labels: "self-hosted,pinaki-local"
-    delegates: edge-custom-job.yaml
+    delegates: ./edge-custom-job.yaml
 
   test:
     steps:
