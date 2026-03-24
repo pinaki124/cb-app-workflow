@@ -11,6 +11,8 @@ on:
       environment:
         type: string
         default: "DEV"
+env:
+  MY_VAR: "my var is an env var"
 
 jobs:
   build:
@@ -19,7 +21,7 @@ jobs:
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
         run: |
-          echo "hello world - ${{ vars.vars_1 }}"
+          echo "hello world - ${{ vars.vars_1 }} - ${{ toJSON(env) }}"
   
   my-edge-job:
     with:
