@@ -16,6 +16,14 @@ jobs:
         shell: sh
         run: |
           echo "hello world"
+  
+  my-edge-job:
+    with:
+      script: |
+        echo "Hello world! I'm $(whoami) on $(hostname)"
+      labels: "self-hosted,pinaki-local"
+    delegates: edge-custom-job.yaml
+
   test:
     steps:
       - name: Say hello
