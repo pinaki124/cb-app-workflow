@@ -29,8 +29,8 @@ jobs:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
         
-        echo "\033[0;31m Env context \033[0m"
-        echo "${{ toJSON(env) }}"
+        # echo "\033[0;31m Env context \033[0m"
+        # echo "${{ toJSON(env) }}"
 
         echo "\033[0;31m Inputs context \033[0m"
         echo "${{ toJSON(inputs) }}"
