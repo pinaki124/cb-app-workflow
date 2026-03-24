@@ -7,6 +7,11 @@ on:
     branches:
       - '**'
   workflow_dispatch:
+    inputs:
+      environment:
+        type: string
+        default: "DEV"
+
 
 jobs:
   build:
@@ -22,11 +27,15 @@ jobs:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
 
-        echo "\033[0;31m CloudBees context \033[0m"
-        echo "${{ toJSON(cloudbees) }}"
+        echo "\033[0;31m Inputs context \033[0m"
+        echo "{{ toJSON(inputs) }}"
 
         echo "\033[0;31m Vars context \033[0m"
         echo "${{ vars.vars_1 }}"
+
+        echo "\033[0;31m CloudBees context \033[0m"
+        echo "${{ toJSON(cloudbees) }}"
+
       labels: "pinaki-local"
     delegates: ./edge-custom-job.yaml
 
