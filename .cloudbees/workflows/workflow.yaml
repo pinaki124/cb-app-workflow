@@ -12,8 +12,8 @@ on:
         type: string
         default: "DEV"
 
-env:
-  MY_VAR: "my var is an env var"
+# env:
+#   MY_VAR: "my var is an env var"
 
 jobs:
   build:
