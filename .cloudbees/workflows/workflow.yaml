@@ -22,9 +22,11 @@ jobs:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
 
-        echo "CloudBees context: ${{ toJSON(cloudbees) }}"
+        echo -e "\033[STYLE;COLORm CloudBees context \033[0m"
+        echo "${{ toJSON(cloudbees) }}"
 
-        echo "Vars context: ${{ toJSON(vars) }}"
+        echo -e "\033[STYLE;COLORm Vars context \033[0m"
+        echo "${{ toJSON(vars) }}"
       labels: "pinaki-local"
     delegates: ./edge-custom-job.yaml
 
