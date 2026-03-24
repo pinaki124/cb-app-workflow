@@ -15,18 +15,18 @@ jobs:
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
         run: |
-          echo "hello world - ${{ toJSON(vars) }}"
+          echo "hello world - ${{ vars.vars_1 }}"
   
   my-edge-job:
     with:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
 
-        echo -e "\033[0;31m CloudBees context \033[0m"
+        echo "\033[0;31m CloudBees context \033[0m"
         echo "${{ toJSON(cloudbees) }}"
 
-        echo -e "\033[0;31m Vars context \033[0m"
-        echo "${{ toJSON(vars) }}"
+        echo "\033[0;31m Vars context \033[0m"
+        echo "${{ vars.vars_1 }}"
       labels: "pinaki-local"
     delegates: ./edge-custom-job.yaml
 
