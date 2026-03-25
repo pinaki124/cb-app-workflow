@@ -36,7 +36,7 @@ jobs:
         echo "${{ toJSON(cloudbees) }}"
 
       labels: "pinaki-local"
-    delegates: ./edge-custom-job.yaml
+    delegates: cloudbees-io/edge-custom-job/custom-job.yaml
 
   test:
     steps:
