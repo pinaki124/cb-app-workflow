@@ -26,8 +26,6 @@ jobs:
     with:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
-
-        echo "Output from previous step: ${{ steps.hello-1.outputs.hello }}"
         
         echo "\033[0;31m Inputs context \033[0m"
         echo "${{ toJSON(inputs) }}"
