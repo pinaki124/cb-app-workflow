@@ -16,15 +16,18 @@ jobs:
   build:
     steps:
       - name: Say hello
+        id: hello-1
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
         run: |
-          echo "hello world - ${{ vars.vars_1 }}"
+          echo "hello world - ${{ vars.vars_1 }}" > $CLOUDBEES_OUTPUTS/hello
   
   my-edge-job:
     with:
       script: |
         echo "Hello world! I'm $(whoami) on $(hostname)"
+
+        echo "Output from previous step: ${{ steps.hello-1.outputs.hello }}"
         
         echo "\033[0;31m Inputs context \033[0m"
         echo "${{ toJSON(inputs) }}"
