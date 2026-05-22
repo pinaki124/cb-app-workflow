@@ -6,6 +6,9 @@ on:
   push:
     tags:
       - '**'
+    branches:
+      - '**'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,3 +18,27 @@ jobs:
         shell: sh
         run: |
           echo "hello world - running for tags"
+
+  greet-multiple:
+    steps:
+      - id: greet-alice
+        name: Greet Alice
+        uses: ./greeter
+        with:
+          name: Alice
+      - id: greet-bob
+        name: Greet Bob
+        uses: ./greeter
+        with:
+          name: Bob
+      - id: greet-charlie
+        name: Greet Charlie
+        uses: ./greeter
+        with:
+          name: Charlie
+      - name: Print all greetings
+        uses: docker://alpine:3.18
+        run: |
+          echo "Alice said: ${{ steps.greet-alice.outputs.greeting }}"
+          echo "Bob said: ${{ steps.greet-bob.outputs.greeting }}"
+          echo "Charlie said: ${{ steps.greet-charlie.outputs.greeting }}"

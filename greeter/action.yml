@@ -1,0 +1,21 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: action
+name: 'Greeter'
+description: 'Greets someone and outputs the greeting message'
+inputs:
+  name:
+    description: 'Name to greet'
+    required: true
+outputs:
+  greeting:
+    description: 'The greeting message that was generated'
+    value: ${{ steps.greet.outputs.greeting }}
+runs:
+  using: composite
+  steps:
+    - id: greet
+      uses: docker://alpine:3.18
+      run: |
+        MSG="Hello, ${{ inputs.name }}!"
+        echo "$MSG"
+        printf '%s' "$MSG" > $CLOUDBEES_OUTPUTS/greeting
