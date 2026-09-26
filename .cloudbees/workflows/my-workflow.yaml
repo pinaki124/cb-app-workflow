@@ -18,7 +18,7 @@ jobs:
         shell: sh
         run: |
           echo "hello world - running for tags"
-          echo "checking for scans"
+          echo "checking for scans - again"
 
   greet-multiple:
     steps:
