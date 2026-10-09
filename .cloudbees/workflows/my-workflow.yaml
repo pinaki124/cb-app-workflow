@@ -19,6 +19,13 @@ jobs:
         run: |
           echo "hello world - running for tags"
           echo "checking for scans - again"
+      - name: checkout-another
+        uses: cloudbees-io/checkout@v1
+        env:
+          RUNNER_DEBUG: "1"
+        with:
+          repository: pinaki124/cb-workflow
+          token: ${{ cloudbees.scm.token }}
 
   greet-multiple:
     steps:
