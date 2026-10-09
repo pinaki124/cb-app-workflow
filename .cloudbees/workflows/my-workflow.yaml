@@ -25,7 +25,7 @@ jobs:
           RUNNER_DEBUG: "1"
         with:
           repository: pinaki124/cb-workflow
-          token: ${{ cloudbees.scm.token }}
+          # token: ${{ cloudbees.scm.token }}
 
   greet-multiple:
     steps:
