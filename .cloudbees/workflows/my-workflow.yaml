@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    if: false
     steps:
       - name: Say hello
         uses: docker://golang:1.20.3-alpine3.17
@@ -28,6 +29,7 @@ jobs:
           # token: ${{ cloudbees.scm.token }}
 
   greet-multiple:
+    needs: [build]
     steps:
       - id: greet-alice
         name: Greet Alice
